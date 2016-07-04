@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<style type="text/css">
+	/*html body{
+		width: 100%;height: 100%;
+	}*/
+	#main{
+		width: 800px;height:600px;background-color: yellow;position: relative;border:1px solid black;margin: 0 auto;margin-top: 50px;
+	}
+	#main #warp{
+		width: 40px;height: 40px;background: red;
+	}
+	/*#main div{;background-repeat: no-repeat;}*/
+	div{
+		width: 40px;height: 40px;
+		position: absolute;background:green;
+	}
+	#score{position:absolute; left:650px;top: 7px;width: 50px;height: 30px;background: white;color: black;font-weight: bolder;font-size: 25px;border:2px dotted black;text-align: center;}
+</style>
+<body>
+	<div id="main">
+		<div id="warp"></div>		
+	</div>
+	<div id="score">0</div>	
+</body>
+<script type="text/javascript">
+	var warp=document.getElementById("warp");
+	var main=document.getElementById("main");
+	var score=document.getElementById("score");
+	var divs=main.getElementsByTagName("div");
+	var heads=[];
+	heads.push(warp);
+
+	//这里是控制食物的产出的
+	var index=0;
+	var flag=true;
+	// var flow=false;
+
+
+	//这里是控制走路的
+	var box=40;
+	var sX=0;
+	var sY=0;
+	var l=0;
+	var t=0;
+
+	//生产食物
+	function mao(){
+		var oDiv=document.createElement("div");
+		main.appendChild(oDiv);
+		var L=fnRand(0,750);
+		var T=fnRand(0,550);		
+		oDiv.style.left=L+'px';
+		oDiv.style.top=T+'px';
+	}
+
+	
+	//走动事件
+	var timer=setInterval(function(){
+		//这里生产食物
+		if (flag) {
+			mao();
+			index++;
+			flag=false;
+		}
+
+
+		// if (true) {
+			var gl,gt;
+			for (var i = heads.length-1; i >0; i--) {
+				gl=heads[i-1].offsetLeft;
+				gt=heads[i-1].offsetTop;
+				heads[i].style.left=gl+'px';
+				heads[i].style.top=gt+'px';
+				// 蛇头的left、top不断变化，而蛇身的left、top也在不断向前一个div变化！
+			}
+		// }
+
+
+		l+=sX;
+		t+=sY;
+		warp.style.left=l+'px';
+		warp.style.top=t+'px';
+
+		var l1=warp.offsetLeft;
+		var r1=warp.offsetWidth+l1;
+		var t1=warp.offsetTop;
+		var b1=warp.offsetHeight+t1;
+
+		var l2=divs[index].offsetLeft;
+		var r2=divs[index].offsetWidth+l2;
+		var t2=divs[index].offsetTop;
+		var b2=divs[index].offsetHeight+t2;
+
+		// 注意下面for循环的位置
+		for (var i = 1; i < heads.length; i++) {
+			var l3=heads[i].offsetLeft;
+			var r3=heads[i].offsetWidth+l3;
+			var t3=heads[i].offsetTop;
+			var b3=heads[i].offsetHeight+t3;
+			if (l1<r3 && r1>l3 && t1<b3 && b1>t3) {
+				alert("游戏结束了,你获得了"+index+"分");
+				clearInterval(timer);
+				window.location.reload();
+			}
+
+			var timer2=setInterval(function(){
+				if (l1<=0||t1<=0||l1>750||t1>550) {					
+						alert("游戏结束了,你获得了"+index+"分");
+						clearInterval(timer2)
+						window.location.reload();							
+				}
+			}, 10)
+		}
+
+
+		if (l1<r2 && r1>l2 && t1<b2 && b1>t2) {
+			heads.push(divs[index]);
+			divs[index].style.left=l+'px';
+			divs[index].style.top=t+'px';
+			divs[index].style.backgroundColor="black";
+			flag=true;
+			score.innerHTML=index;
+
+			// flow=true;
+		}
+	}, 150)
+
+
+
+
+
+	//键盘控制方向事件
+	document.onkeydown=function(e){
+
+		var e=e||window.event;
+		switch(e.keyCode){
+			case 37://左
+				sX = -box;
+				sY = 0;
+			break;			
+			case 38://上
+				sX = 0;
+				sY = -box;
+			break;
+			case 39://右
+				sX = box;
+				sY = 0;
+			break;
+			case 40://下
+				sX = 0;
+				sY = box;
+			break;
+		}
+	}
+
+	// 随机数
+	function fnRand(m,n){
+		var r=Math.round(Math.random()*(n-m)+m);
+		return r;
+	}
+</script>
+<ml>
